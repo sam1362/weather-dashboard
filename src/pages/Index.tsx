@@ -8,7 +8,7 @@ import { WeatherSearch } from '../components/ui/WeatherSearch'
 import { useDebounce } from '../hooks/useDebounce'
 import { useToast } from '../hooks/use-toast'
 import { useWeather } from '../hooks/useWeather'
-import { reverseGeocode, searchCoordinatesList } from '../lib/api'
+import { searchCoordinatesList } from '../lib/api'
 import type { DailyForecastItem, TemperatureUnit } from '../types/weather'
 
 type ViewMode = 'all' | 'daily' | 'hourly'
@@ -24,7 +24,7 @@ const Index = () => {
   const debouncedQuery = useDebounce(query, 0)
   const firstRun = useRef(true)
 
-  const { data, loading, error, refresh, refreshByCoords, unit, setUnit } = useWeather('')
+  const { data, loading, error, refresh, refreshByCoords, unit, setUnit } = useWeather('Oslo')
   const { toasts, pushToast, dismiss } = useToast()
 
   useEffect(() => {
@@ -35,40 +35,15 @@ const Index = () => {
   useEffect(() => {
     if (firstRun.current) {
       firstRun.current = false
-      if (typeof navigator !== 'undefined' && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            const baseCoords = {
-              lat: pos.coords.latitude,
-              lon: pos.coords.longitude,
-            }
-            try {
-              const named = await reverseGeocode(baseCoords)
-              if (named) {
-                const label = [named.name, named.admin1 ?? named.admin2 ?? named.country].filter(Boolean).join(', ')
-                setQuery(label)
-                refreshByCoords({ ...named, name: label })
-                return
-              }
-            } catch {
-              // fall through to unnamed coords
-            }
-            refreshByCoords({ ...baseCoords, name: 'Ukjent posisjon' })
-          },
-          () => {
-            // Hvis bruker avviser, ikke last noe – la brukeren søke selv
-          },
-          { timeout: 5000 },
-        )
-      }
+      setQuery('')
       return
     }
     const controller = new AbortController()
     const run = async () => {
       if (debouncedQuery.trim().length < 1) {
-  setSuggestions([])
-  return
-}
+        setSuggestions([])
+        return
+      }
 
       try {
         const result = await searchCoordinatesList(debouncedQuery, controller.signal)

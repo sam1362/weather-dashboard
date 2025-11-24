@@ -15,7 +15,8 @@ import {
   Wind,
   Moon,
 } from 'lucide-react'
-import { formatHourLabel, tempLabel, tempToneClass } from '../../lib/utils'
+import { isValidElement } from 'react'
+import { formatHourLabel, roundTemp, tempLabel, tempToneClass } from '../../lib/utils'
 import type { TemperatureUnit } from '../../types/weather'
 
 interface CurrentWeatherProps {
@@ -90,7 +91,9 @@ export const CurrentWeather = ({
   }
 
   const otherUnit: TemperatureUnit = unit === 'celsius' ? 'fahrenheit' : 'celsius'
-  const tempTone = tempToneClass(temperature, darkMode)
+  const temperatureRoundedC = roundTemp(temperature, 'celsius')
+  const feelsRoundedC = roundTemp(feelsLike, 'celsius')
+  const tempTone = tempToneClass(temperatureRoundedC, darkMode)
 
   return (
     <article
@@ -148,22 +151,27 @@ export const CurrentWeather = ({
               {iconForSymbol(symbol)}
             </div>
             <div>
-              <p className={`text-sm capitalize ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className={`text-sm capitalize ${darkMode ? 'text-slate-400' : 'text-slate-600'} break-words max-w-[60vw] lg:max-w-none`}>
                 {symbol.replace(/[-_]/g, ' ')}
               </p>
               <p className={`text-6xl font-bold leading-tight ${tempTone}`}>{tempLabel(temperature, unit)}</p>
               <p className={`text-sm ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                Føles som <span className={tempToneClass(feelsLike, darkMode)}>{tempLabel(feelsLike, unit)}</span> •{' '}
+              Føles som <span className={tempToneClass(feelsRoundedC, darkMode)}>{tempLabel(feelsLike, unit)}</span> •{' '}
                 {tempLabel(temperature, otherUnit)}
-              </p>
-            </div>
+            </p>
           </div>
+        </div>
         </div>
 
         <DetailGrid
           darkMode={darkMode}
           items={[
-            { title: 'Føles som', value: tempLabel(feelsLike, unit), icon: <Thermometer className="h-5 w-5" />, tempC: feelsLike },
+            {
+              title: 'Føles som',
+              value: tempLabel(feelsLike, unit),
+              icon: <Thermometer className="h-5 w-5" />,
+              tempC: feelsRoundedC,
+            },
             { title: 'Symbol', value: symbol.replace(/[-_]/g, ' '), icon: iconForSymbol(symbol) },
             { title: 'Vind', value: windSpeed ? `${windSpeed.toFixed(1)} m/s` : '—', icon: <Wind className="h-5 w-5" /> },
             { title: 'Luftfuktighet', value: humidity ? `${humidity}%` : '—', icon: <Droplets className="h-5 w-5" /> },
@@ -194,15 +202,17 @@ const DetailGrid = ({
         }`}
       >
         <div
-          className={`rounded-full p-3 ${darkMode ? 'bg-white/10 text-teal-400' : 'bg-slate-100 text-teal-500'}`}
+          className={`detail-icon flex h-10 w-10 items-center justify-center rounded-full p-2 ${
+            darkMode ? 'bg-white/10 text-teal-400' : 'bg-slate-100 text-teal-500'
+          }`}
           aria-hidden
         >
-          {item.icon}
+          {isValidElement(item.icon) ? item.icon : null}
         </div>
         <div>
           <p className={`text-sm ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{item.title}</p>
           <p
-            className={`text-xl font-bold ${
+            className={`text-xl font-bold break-words ${
               item.tempC !== undefined ? tempToneClass(item.tempC, darkMode) : darkMode ? 'text-white' : 'text-slate-900'
             }`}
           >

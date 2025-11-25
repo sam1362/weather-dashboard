@@ -63,7 +63,7 @@ export const DailyForecast = ({ items, unit, loading, darkMode = true }: DailyFo
               </div>
               <div className={`flex items-center gap-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                 <Droplets className="h-4 w-4 text-teal-500" aria-hidden />
-                <span>{item.precipitation ? `${item.precipitation.toFixed(1)} mm` : '—'}</span>
+                <span>{item.precipitation ? `${item.precipitation.toFixed(1)} mm` : '0 mm'}</span>
               </div>
             </div>
           </article>

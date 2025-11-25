@@ -33,6 +33,9 @@ export const HourlyForecast = ({ items, unit, loading, darkMode = true }: Hourly
           <h2 className={`text-xl font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>Time for time</h2>
         </div>
       </header>
+      {items.length === 0 ? (
+        <p className={`text-sm ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Ingen timer som matcher filteret.</p>
+      ) : (
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {items.map((item) => (
           <article
@@ -60,7 +63,7 @@ export const HourlyForecast = ({ items, unit, loading, darkMode = true }: Hourly
               </p>
               <div className={`flex items-center gap-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                 <Droplets className="h-4 w-4 text-teal-500" aria-hidden />
-                <span>{item.precipitation ? `${item.precipitation.toFixed(1)} mm` : '—'}</span>
+                <span>{item.precipitation ? `${item.precipitation.toFixed(1)} mm` : '0 mm'}</span>
               </div>
             </div>
             <p className={`text-xs capitalize ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -69,6 +72,7 @@ export const HourlyForecast = ({ items, unit, loading, darkMode = true }: Hourly
           </article>
         ))}
       </div>
+      )}
     </section>
   )
 }

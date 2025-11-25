@@ -7,12 +7,9 @@ import {
   CloudSnow,
   CloudSun,
   Droplets,
-  Eye,
   Gauge,
   Snowflake,
   Sun,
-  SunDim,
-  Thermometer,
   Wind,
   Moon,
 } from 'lucide-react'
@@ -68,8 +65,6 @@ export const CurrentWeather = ({
   windSpeed,
   precipitation,
   pressure,
-  visibilityKm,
-  uvIndex,
   time,
   darkMode = true,
 }: CurrentWeatherProps) => {
@@ -169,19 +164,10 @@ export const CurrentWeather = ({
         <DetailGrid
           darkMode={darkMode}
           items={[
-            {
-              title: 'Føles som',
-              value: tempLabel(feelsLike, unit),
-              icon: <Thermometer className="h-5 w-5" />,
-              tempC: feelsRoundedC,
-            },
-            { title: 'Symbol', value: symbol.replace(/[-_]/g, ' '), icon: iconForSymbol(symbol) },
-            { title: 'Vind', value: windSpeed ? `${windSpeed.toFixed(1)} m/s` : '—', icon: <Wind className="h-5 w-5" /> },
-            { title: 'Luftfuktighet', value: humidity ? `${humidity}%` : '—', icon: <Droplets className="h-5 w-5" /> },
-            { title: 'Nedbør (1t)', value: precipitation ? `${precipitation.toFixed(1)} mm` : '—', icon: <CloudRain className="h-5 w-5" /> },
-            { title: 'Lufttrykk', value: pressure ? `${Math.round(pressure)} hPa` : '—', icon: <Gauge className="h-5 w-5" /> },
-            { title: 'Sikt', value: visibilityKm ? `${visibilityKm} km` : '—', icon: <Eye className="h-5 w-5" /> },
-            { title: 'UV-indeks', value: uvIndex ? `${uvIndex}` : '—', icon: <SunDim className="h-5 w-5" /> },
+            { title: 'Vind', value: windSpeed ? `${windSpeed.toFixed(1)} m/s` : '0 m/s', icon: <Wind className="h-5 w-5" /> },
+            { title: 'Luftfuktighet', value: humidity ? `${humidity}%` : '0%', icon: <Droplets className="h-5 w-5" /> },
+            { title: 'Nedbør (1t)', value: precipitation ? `${precipitation.toFixed(1)} mm` : '0 mm', icon: <CloudRain className="h-5 w-5" /> },
+            { title: 'Lufttrykk', value: pressure ? `${Math.round(pressure)} hPa` : '0 hPa', icon: <Gauge className="h-5 w-5" /> },
           ]}
         />
       </div>

@@ -5,6 +5,7 @@ import { DailyForecast } from '../components/ui/DailyForecast'
 import { HourlyForecast } from '../components/ui/HourlyForecast'
 import { NavLink } from '../components/ui/NavLink'
 import { WeatherSearch } from '../components/ui/WeatherSearch'
+import { HourlyFilter, type HourFilter } from '../components/ui/HourlyFilter'
 import { useDebounce } from '../hooks/useDebounce'
 import { useToast } from '../hooks/use-toast'
 import { useWeather } from '../hooks/useWeather'
@@ -22,6 +23,7 @@ const Index = () => {
   const [suggestions, setSuggestions] = useState<{ label: string; subLabel?: string }[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
+  const [hourFilter, setHourFilter] = useState<HourFilter>('all')
   const debouncedQuery = useDebounce(query, 0)
   const firstRun = useRef(true)
 
@@ -90,6 +92,22 @@ const Index = () => {
   const showDaily = viewMode === 'all' || viewMode === 'daily'
   const showHourly = viewMode === 'all' || viewMode === 'hourly'
   const locationLabel = data?.location.name ?? query
+
+  const filteredHourly = useMemo(() => {
+    const items = data?.hourly ?? []
+    switch (hourFilter) {
+      case 'cold':
+        return items.filter((h) => h.temp <= 0)
+      case 'warm':
+        return items.filter((h) => h.temp >= 20)
+      case 'precip':
+        return items.filter((h) => (h.precipitation ?? 0) > 0)
+      case 'dry':
+        return items.filter((h) => (h.precipitation ?? 0) === 0)
+      default:
+        return items
+    }
+  }, [data?.hourly, hourFilter])
 
   const toggleUnit = (next: TemperatureUnit) => setUnit(next)
 
@@ -252,11 +270,13 @@ const Index = () => {
           />
         )}
 
-        {showDaily && <DailyForecast unit={unit} items={dailyItems} loading={loading} darkMode={darkMode} />}
+        {showHourly && <HourlyFilter value={hourFilter} onChange={setHourFilter} darkMode={darkMode} />}
 
         {showHourly && (
-          <HourlyForecast unit={unit} items={data?.hourly ?? []} loading={loading} darkMode={darkMode} />
+          <HourlyForecast unit={unit} items={filteredHourly} loading={loading} darkMode={darkMode} />
         )}
+
+        {showDaily && <DailyForecast unit={unit} items={dailyItems} loading={loading} darkMode={darkMode} />}
 
         {!loading && !data && (
           <p className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-slate-300">

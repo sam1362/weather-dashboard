@@ -1,8 +1,10 @@
+// Tester WeatherSearch-komponenten
 import { jest } from '@jest/globals'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { WeatherSearch } from '../components/ui/WeatherSearch'
 
 describe('WeatherSearch', () => {
+  // Sjekk at onChange og onSubmit trigges via Enter
   it('kaller onChange og onSubmit via Enter', () => {
     const onChange = jest.fn()
     const onSubmit = jest.fn()

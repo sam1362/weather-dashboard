@@ -13,6 +13,7 @@ import type { DailyForecastItem, TemperatureUnit } from '../types/weather'
 
 type ViewMode = 'all' | 'daily' | 'hourly'
 
+// Hovedside for vær-dashboardet
 const Index = () => {
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = useState<ViewMode>('all')
@@ -27,11 +28,13 @@ const Index = () => {
   const { data, loading, error, refresh, refreshByCoords, unit, setUnit } = useWeather('Oslo')
   const { toasts, pushToast, dismiss } = useToast()
 
+  // Toggle lys/mørk modus på body
   useEffect(() => {
     if (typeof document === 'undefined') return
     document.body.classList.toggle('light-mode', !darkMode)
   }, [darkMode])
 
+  // Hent stedsforslag når bruker skriver
   useEffect(() => {
     if (firstRun.current) {
       firstRun.current = false
@@ -64,6 +67,7 @@ const Index = () => {
     return () => controller.abort()
   }, [debouncedQuery, refresh, showSuggestions])
 
+  // Vis feil som toast
   useEffect(() => {
     if (error) {
       pushToast({
@@ -90,6 +94,7 @@ const Index = () => {
   const toggleUnit = (next: TemperatureUnit) => setUnit(next)
 
   return (
+    // Layout for hovedsiden
     <main className={`min-h-screen px-4 py-10 md:px-10 lg:px-16 ${darkMode ? 'bg-midnight' : 'bg-white'}`}>
       <div
         className={`mx-auto flex max-w-6xl flex-col gap-8 ${

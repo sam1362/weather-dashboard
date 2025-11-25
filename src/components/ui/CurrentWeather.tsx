@@ -1,3 +1,4 @@
+// Presentasjon av nåværende vær + detaljer
 import {
   Cloud,
   CloudFog,
@@ -37,6 +38,7 @@ interface CurrentWeatherProps {
   darkMode?: boolean
 }
 
+// Velg passende ikon ut fra MET symbol_code (med dag/natt)
 const iconForSymbol = (symbol: string) => {
   const raw = symbol.toLowerCase()
   const normalized = raw.replace(/[_-](day|night|polartwilight)/g, '')
@@ -96,6 +98,7 @@ export const CurrentWeather = ({
   const tempTone = tempToneClass(temperatureRoundedC, darkMode)
 
   return (
+    // Kort for nåværende vær + detaljrute
     <article
       className="glass rounded-3xl p-6 shadow-lg shadow-black/40 md:p-8"
       aria-label="Nåværende vær"

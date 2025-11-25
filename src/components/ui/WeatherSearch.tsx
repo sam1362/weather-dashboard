@@ -1,3 +1,4 @@
+// Søkeinput med forslag og posisjonsknapp
 import { Search, Compass, MapPin, LocateFixed } from 'lucide-react'
 import { useCallback, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/utils'
@@ -23,6 +24,7 @@ export const WeatherSearch = ({
   onSelectSuggestion,
   onUseCurrentLocation,
 }: WeatherSearchProps) => {
+  // Tastatur-håndtering for Enter
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
@@ -34,6 +36,7 @@ export const WeatherSearch = ({
   )
 
   return (
+    // Skjema for søk + forslag
     <form
       className="relative z-30 glass flex flex-col gap-3 rounded-2xl p-4 shadow-lg md:flex-row md:items-center md:gap-4"
       role="search"

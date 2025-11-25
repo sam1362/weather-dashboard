@@ -1,3 +1,4 @@
+// Enkel Playwright-test med mock av APIer
 import { expect, test } from '@playwright/test'
 
 const weatherMock = {
@@ -20,6 +21,7 @@ const weatherMock = {
 }
 
 test.beforeEach(async ({ page }) => {
+  // Mock geokoding for alle kall
   await page.route('**/geocoding-api.open-meteo.com/**', (route) => {
     const url = new URL(route.request().url())
     const name = url.searchParams.get('name') ?? 'Oslo'
@@ -50,11 +52,14 @@ test.beforeEach(async ({ page }) => {
 })
 
 test('viser dashboard, skjelett og data', async ({ page }) => {
+  // Start appen
   await page.goto('/')
 
+  // Sjekk heading og kort
   await expect(page.getByRole('heading', { name: 'Værdashboard' })).toBeVisible()
   await expect(page.getByRole('article', { name: 'Nåværende vær' })).toBeVisible()
 
+  // Søk etter Bergen og forvent at kortet viser byen
   await page.getByLabel('Søk etter sted').fill('Bergen')
   await page.getByRole('button', { name: 'Søk nå' }).click()
 

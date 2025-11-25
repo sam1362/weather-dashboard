@@ -1,3 +1,4 @@
+// Mapper rådata fra MET til interne modeller
 import type {
   CurrentWeather,
   DailyForecastItem,
@@ -7,11 +8,13 @@ import type {
   WeatherTimeseries,
 } from '../types/weather'
 
+// Velg symbol fra timeserie (1t/6t)
 const pickSymbol = (entry: WeatherTimeseries) =>
   entry.data.next_1_hours?.summary?.symbol_code ??
   entry.data.next_6_hours?.summary?.symbol_code ??
   'cloudy'
 
+// Bygg nåværende vær fra første timeserie
 const mapCurrentWeather = (entry: WeatherTimeseries): CurrentWeather => {
   const temperature = entry.data.instant.details.air_temperature
   const windSpeed = entry.data.instant.details.wind_speed
@@ -31,6 +34,7 @@ const mapCurrentWeather = (entry: WeatherTimeseries): CurrentWeather => {
   }
 }
 
+// Aggreger per dag (min/max/akkumulert nedbør)
 const mapDailyForecast = (series: WeatherTimeseries[]): DailyForecastItem[] => {
   const grouped = new Map<string, DailyForecastItem>()
 
@@ -63,6 +67,7 @@ const mapDailyForecast = (series: WeatherTimeseries[]): DailyForecastItem[] => {
   return Array.from(grouped.values()).slice(0, 7)
 }
 
+// Plukk ut første 12 timer
 const mapHourlyForecast = (series: WeatherTimeseries[]): HourlyForecastItem[] =>
   series.slice(0, 12).map((entry) => ({
     time: entry.time,

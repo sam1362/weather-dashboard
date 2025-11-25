@@ -1,3 +1,4 @@
+// Tester useDebounce-hooken
 import { jest } from '@jest/globals'
 import { act, renderHook } from '@testing-library/react'
 import { useDebounce } from '../hooks/useDebounce'
@@ -5,6 +6,7 @@ import { useDebounce } from '../hooks/useDebounce'
 jest.useFakeTimers()
 
 describe('useDebounce', () => {
+  // Verifiserer at verdien oppdateres etter 600 ms
   it('debouncer oppdaterer etter 600ms', () => {
     const { result, rerender } = renderHook(({ value }) => useDebounce(value, 600), {
       initialProps: { value: 'Oslo' },

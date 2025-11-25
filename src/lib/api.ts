@@ -1,8 +1,10 @@
+// API-kall mot geokoding (Open-Meteo) og MET locationforecast
 import type { Coordinates, WeatherResponse } from '../types/weather'
 
 const WEATHER_BASE_URL = 'https://api.met.no/weatherapi/locationforecast/2.0/compact'
 const GEO_URL = 'https://geocoding-api.open-meteo.com/v1/search'
 
+// Slår opp ett koordinat-treff (Norge, nb)
 export const searchCoordinates = async (query: string, signal?: AbortSignal): Promise<Coordinates | null> => {
   if (!query.trim()) return null
 
@@ -29,6 +31,7 @@ export const searchCoordinates = async (query: string, signal?: AbortSignal): Pr
   }
 }
 
+// Slår opp flere forslag (brukes i søkeresultater)
 export const searchCoordinatesList = async (query: string, signal?: AbortSignal): Promise<Coordinates[]> => {
   if (!query.trim()) return []
 
@@ -71,6 +74,7 @@ export const reverseGeocode = async (coords: Pick<Coordinates, 'lat' | 'lon'>, s
   } as Coordinates
 }
 
+// Henter værdata fra MET basert på lat/lon
 export const fetchWeather = async (
   coords: Pick<Coordinates, 'lat' | 'lon'>,
   signal?: AbortSignal,

@@ -1,3 +1,4 @@
+// Fanger opp render-feil i UI og viser enkel fallback
 import { Component, type ReactNode } from 'react'
 
 interface Props {
@@ -15,6 +16,7 @@ export class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false, message: undefined }
   }
 
+  // Sett feilflagget når en feil oppstår
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, message: error.message }
   }

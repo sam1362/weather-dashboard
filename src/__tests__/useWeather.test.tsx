@@ -1,7 +1,9 @@
+// Tester useWeather-hooken
 import { jest } from '@jest/globals'
 import { act, renderHook } from '@testing-library/react'
 import { useWeather } from '../hooks/useWeather'
 
+// Mock geokoding-respons
 const mockGeo = {
   results: [
     {
@@ -14,6 +16,7 @@ const mockGeo = {
   ],
 }
 
+// Mock værrespons
 const mockWeather = {
   properties: {
     meta: { updated_at: '2024-01-01T00:00:00Z' },
@@ -46,6 +49,7 @@ const mockWeather = {
   },
 }
 
+// Hjelpefunksjon: bygger fetch-mock med kø av responser
 const buildFetch = (...responses: Array<{ ok?: boolean; json: () => Promise<unknown> }>) => {
   const mock = jest.fn() as any
   responses.forEach((res) => {
@@ -59,6 +63,7 @@ describe('useWeather', () => {
     jest.resetAllMocks()
   })
 
+  // Henter data OK
   it('henter og mapper data fra MET', async () => {
     const fetchMock = buildFetch(
       { json: async () => mockGeo },
@@ -77,6 +82,7 @@ describe('useWeather', () => {
     expect(result.current.error).toBeNull()
   })
 
+  // Feil når geokoding ikke gir treff
   it('returnerer feil når geokoding ikke gir treff', async () => {
     const fetchMock = buildFetch({ json: async () => ({ results: [] }) })
     globalThis.fetch = fetchMock as unknown as typeof fetch

@@ -1,3 +1,4 @@
+// Viser 7-dagers varsel
 import { CloudSun, Droplets, Thermometer } from 'lucide-react'
 import { formatDateLabel, tempLabel, tempToneClass } from '../../lib/utils'
 import type { DailyForecastItem, TemperatureUnit } from '../../types/weather'

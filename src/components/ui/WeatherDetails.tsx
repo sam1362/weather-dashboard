@@ -1,3 +1,4 @@
+// Viser detaljer (føles som, fuktighet, vind, trykk, UV, sikt)
 import { Droplets, Eye, Gauge, SunDim, Thermometer, Wind } from 'lucide-react'
 import { tempLabel } from '../../lib/utils'
 import type { TemperatureUnit } from '../../types/weather'
@@ -14,6 +15,7 @@ interface WeatherDetailsProps {
   darkMode?: boolean
 }
 
+// Enkel kort for en detalj
 const detailCard = (
   label: string,
   value: string,
@@ -52,6 +54,7 @@ export const WeatherDetails = ({
   darkMode = true,
 }: WeatherDetailsProps) => {
   if (loading) {
+    // Skjelett når data laster
     return (
       <section className="grid gap-3 md:grid-cols-2">
         {Array.from({ length: 6 }).map((_, idx) => (

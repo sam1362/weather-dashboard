@@ -1,7 +1,9 @@
+// Tester CurrentWeather-komponenten
 import { render, screen } from '@testing-library/react'
 import { CurrentWeather } from '../components/ui/CurrentWeather'
 
 describe('CurrentWeather', () => {
+  // Sjekk at både °C og °F vises
   it('viser både Celsius og Fahrenheit', () => {
     render(
       <CurrentWeather

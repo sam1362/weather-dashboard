@@ -1,8 +1,10 @@
+// Tilgjengelighetstest (axe) for appen
 import { jest } from '@jest/globals'
 import { act, render } from '@testing-library/react'
 import * as jestAxe from 'jest-axe'
 import App from '../App'
 
+// Mock geokoding-respons
 const mockGeo = {
   results: [
     {
@@ -15,6 +17,7 @@ const mockGeo = {
   ],
 }
 
+// Mock værrespons
 const mockWeather = {
   properties: {
     meta: { updated_at: '2024-01-01T00:00:00Z' },
@@ -40,6 +43,7 @@ const mockWeather = {
 }
 
 describe('A11y', () => {
+  // Sett opp fetch-mock før hver test
   beforeEach(() => {
     const fetchMock = jest.fn() as any
     fetchMock.mockResolvedValueOnce({ ok: true, json: async () => mockGeo } as any)
@@ -49,6 +53,7 @@ describe('A11y', () => {
   })
 
   it('har ingen tilgjengelighetsfeil', async () => {
+    // Rendrer appen og kjører axe
     let container: HTMLElement
     await act(async () => {
       container = render(<App />).container

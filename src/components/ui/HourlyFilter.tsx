@@ -29,7 +29,7 @@ export const HourlyFilter = ({ value, onChange, darkMode = true }: HourlyFilterP
         Kalde (≤0°C)
       </button>
       <button type="button" className={`${baseBtn} ${styles(value === 'warm')}`} onClick={() => onChange('warm')}>
-        Varme (≥10°C)
+        Varme (≥15°C)
       </button>
       <button type="button" className={`${baseBtn} ${styles(value === 'precip')}`} onClick={() => onChange('precip')}>
         Med nedbør

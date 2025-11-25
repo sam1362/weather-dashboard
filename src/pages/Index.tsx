@@ -99,7 +99,7 @@ const Index = () => {
       case 'cold':
         return items.filter((h) => h.temp <= 0)
       case 'warm':
-        return items.filter((h) => h.temp >= 20)
+        return items.filter((h) => h.temp >= 15)
       case 'precip':
         return items.filter((h) => (h.precipitation ?? 0) > 0)
       case 'dry':

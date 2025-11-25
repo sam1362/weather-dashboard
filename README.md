@@ -7,15 +7,25 @@ UI og kommentarer er på norsk.
 
 ---
 
-## Hovedfunksjoner
-- Nåværende vær med både Celsius og Fahrenheit, føles som, vind, luftfuktighet og nedbør.
-- 7-dagers og time-for-time visning, med enkel filtrering (Alle/Daglig/Time) og sortering på varmest først.
-- Søk med 600 ms debounce; tast Enter eller klikk på søk. Geokoding via open-meteo (for å få lat/lon til MET-kallet).
-- Lasteskjeletter for alle seksjoner, feilhåndtering med toast og error boundary.
-- Responsivt (320 / 768 / 1024) med Tailwind, mobil først.
-- A11y: semantiske områder (main/section/article/time), ARIA-labels, tastaturfokus (focus-visible), Enter-handlere, alt-tekst/ikoner.
-- Valgfri mørk/lys-modus, enhetstoggling °C/°F, ikonpakke fra lucide-react.
+## Implementerte funksjoner og forskjeller
 
+Nesten alle krav er implementert, med følgende detaljer:
+
+✔ Nåværende vær (°C/°F, vind, fuktighet, nedbør, trykk, sikt, UV)  
+✔ Dynamiske symboler basert på MET `symbol_code` (dag/natt)  
+✔ Time-for-time (12 timer) og 7-dagers varsel  
+✔ Filtre for alle / kaldt (≤0°C) / varmt (≥15°C) / med nedbør / uten nedbør  
+✔ Søk med forslag fra første tegn (open-meteo geokoding)  
+✔ MET locationforecast for værdata  
+✔ Skjelett-loading, toast og feilgrense  
+✔ Mørk/lys-modus, temperaturfarger og lucide-ikoner  
+✔ A11y (ARIA, semantikk, focus-visible)
+
+### Bruk min posisjon
+- Henter geolokasjon **kun ved klikk** (ingen automatisk forespørsel).  
+- Søket tømmes, koordinater hentes via `navigator.geolocation` og MET oppdateres.  
+- Hvis brukeren avslår, skjer ingenting (stille fallback).  
+- Første lasting bruker **Oslo** som standard.
 ---
 
 ## Teknologistack

@@ -12,6 +12,7 @@ interface WeatherSearchProps {
   suggestions?: Array<{ label: string; subLabel?: string }>
   onSelectSuggestion?: (value: string) => void
   onUseCurrentLocation?: () => void
+  disableTooltip?: boolean
 }
 
 export const WeatherSearch = ({
@@ -23,6 +24,7 @@ export const WeatherSearch = ({
   suggestions = [],
   onSelectSuggestion,
   onUseCurrentLocation,
+  disableTooltip = false,
 }: WeatherSearchProps) => {
   // Tastatur-håndtering for Enter
   const handleKeyDown = useCallback(
@@ -38,7 +40,7 @@ export const WeatherSearch = ({
   return (
     // Skjema for søk + forslag
     <form
-      className="relative z-30 glass flex flex-col gap-3 rounded-2xl p-4 shadow-lg md:flex-row md:items-center md:gap-4"
+      className="relative z-30 glass flex flex-row flex-wrap items-center gap-2 rounded-2xl p-4 shadow-lg"
       role="search"
       aria-label="Søk etter sted"
       onSubmit={(event) => {
@@ -110,20 +112,20 @@ export const WeatherSearch = ({
           type="button"
           onClick={onUseCurrentLocation}
           className={cn(
-            'relative rounded-xl px-4 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
+            'relative h-12 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
             darkMode
               ? 'bg-white/5 text-slate-200 hover:bg-white/10'
               : 'bg-slate-100 text-slate-800 hover:bg-slate-200',
           )}
           aria-label="Bruk min posisjon"
-          data-tooltip="Bruk min posisjon"
+          data-tooltip={disableTooltip ? undefined : 'Bruk min posisjon'}
         >
           <LocateFixed className="h-5 w-5" aria-hidden />
         </button>
         <button
           type="submit"
           className={cn(
-            'flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
+            'flex h-12 items-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
             loading
               ? darkMode
                 ? 'bg-white/10 text-slate-400'

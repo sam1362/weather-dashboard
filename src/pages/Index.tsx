@@ -9,6 +9,7 @@ import { HourlyFilter, type HourFilter } from '../components/ui/HourlyFilter'
 import { useDebounce } from '../hooks/useDebounce'
 import { useToast } from '../hooks/use-toast'
 import { useWeather } from '../hooks/useWeather'
+import { useMobile } from '../hooks/use-mobile'
 import { searchCoordinatesList } from '../lib/api'
 import type { DailyForecastItem, TemperatureUnit } from '../types/weather'
 
@@ -22,10 +23,12 @@ const Index = () => {
   const [darkMode, setDarkMode] = useState(true)
   const [suggestions, setSuggestions] = useState<{ label: string; subLabel?: string }[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
   const [infoMessage, setInfoMessage] = useState<string | null>(null)
   const [hourFilter, setHourFilter] = useState<HourFilter>('all')
   const debouncedQuery = useDebounce(query, 0)
   const firstRun = useRef(true)
+  const isMobile = useMobile(768)
 
   const { data, loading, error, refresh, refreshByCoords, unit, setUnit } = useWeather('Oslo')
   const { toasts, pushToast, dismiss } = useToast()
@@ -115,39 +118,82 @@ const Index = () => {
     // Layout for hovedsiden
     <main className={`min-h-screen px-4 py-10 md:px-10 lg:px-16 ${darkMode ? 'bg-midnight' : 'bg-white'}`}>
       <div
-        className={`mx-auto flex max-w-6xl flex-col gap-8 ${
-          darkMode ? 'text-slate-100' : 'text-slate-900'
-        }`}
+        className={`mx-auto flex max-w-6xl flex-col gap-8 ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}
       >
-        <header className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <p className="tag">MET Norway / YR</p>
-            <h1
-              className={`mt-2 text-3xl font-bold md:text-4xl ${
-                darkMode ? 'text-white' : 'text-slate-900'
-              }`}
-            >
+        <header className="flex items-start justify-between gap-4">
+          <div className="max-w-xl">
+            <h1 className={`text-3xl font-bold md:text-4xl ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               Værdashboard
             </h1>
-            <p className={`max-w-2xl text-sm ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-              Live-data fra MET med søk, filtrering og temperatur i både Celsius og Fahrenheit.
-            </p>
           </div>
-          <button
-            type="button"
-            onClick={() => setDarkMode((prev) => !prev)}
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
-              darkMode
-                ? 'bg-white/5 text-slate-200 hover:bg-white/10'
-                : 'bg-slate-900 text-white hover:bg-slate-800'
-            }`}
-            aria-pressed={darkMode}
-            aria-label="Veksle tema"
-          >
-            {darkMode ? <MoonStar className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
-            {darkMode ? 'Mørkt' : 'Lyst'}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setDarkMode((prev) => !prev)}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                darkMode
+                  ? 'bg-white/5 text-slate-200 hover:bg-white/10'
+                  : 'bg-slate-900 text-white hover:bg-slate-800'
+              }`}
+              aria-pressed={darkMode}
+              aria-label="Veksle tema"
+            >
+              {darkMode ? <MoonStar className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
+              {darkMode ? 'Mørkt' : 'Lyst'}
+            </button>
+            {isMobile && (
+              <button
+                type="button"
+                onClick={() => setShowMenu((prev) => !prev)}
+                className={`rounded-full p-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                  darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                }`}
+                aria-label="Meny"
+              >
+                ☰
+              </button>
+            )}
+          </div>
         </header>
+
+        {isMobile && showMenu && (
+          <section aria-label="Navigasjon" className="flex flex-col gap-2">
+            <NavLink label="Varsel" active={viewMode === 'all'} onClick={() => { setViewMode('all'); setShowMenu(false) }} darkMode={darkMode} />
+            <NavLink
+              label="Andre forhold"
+              active={viewMode === 'daily'}
+              onClick={() => { setInfoMessage('Andre forhold er under arbeid – ingen data tilgjengelig ennå.'); setShowMenu(false) }}
+              darkMode={darkMode}
+            />
+            <NavLink
+              label="Kart"
+              active={viewMode === 'hourly'}
+              onClick={() => { setInfoMessage('Kart er under arbeid – ingen data tilgjengelig ennå.'); setShowMenu(false) }}
+              darkMode={darkMode}
+            />
+            {['21-dagers varsel', 'Hav og kyst', 'Detaljer', 'Statistikk'].map((label) => (
+              <NavLink
+                key={label}
+                label={label}
+                darkMode={darkMode}
+                onClick={() => { setInfoMessage(`${label} er under arbeid – ingen data tilgjengelig ennå.`); setShowMenu(false) }}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                setInfoMessage('Sorter på varme først er under arbeid – ingen data tilgjengelig ennå.')
+                setShowMenu(false)
+              }}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+              }`}
+              aria-pressed={sortWarmFirst}
+            >
+              Sorter på varme først
+            </button>
+          </section>
+        )}
 
         <WeatherSearch
           value={query}
@@ -158,9 +204,10 @@ const Index = () => {
           onSubmit={() => refresh(query)}
           loading={loading}
           darkMode={darkMode}
+          disableTooltip={isMobile}
           suggestions={showSuggestions ? suggestions : []}
           onSelectSuggestion={(value) => {
-            setQuery(value)
+            setQuery('')
             refresh(value)
             setSuggestions([])
             setShowSuggestions(false)
@@ -172,11 +219,9 @@ const Index = () => {
             if (typeof navigator !== 'undefined' && navigator.geolocation) {
               navigator.geolocation.getCurrentPosition(
                 (pos) => {
-                  refreshByCoords({
-                    lat: pos.coords.latitude,
-                    lon: pos.coords.longitude,
-                    name: 'Din posisjon',
-                  })
+                  const base = { lat: pos.coords.latitude, lon: pos.coords.longitude }
+                  setQuery('')
+                  refreshByCoords({ ...base, name: 'Din posisjon' })
                 },
                 () => undefined,
                 { timeout: 5000 },
@@ -185,41 +230,43 @@ const Index = () => {
           }}
         />
 
-        <section aria-label="Navigasjon" className="flex flex-wrap items-center gap-3">
-          <NavLink label="Varsel" active={viewMode === 'all'} onClick={() => setViewMode('all')} darkMode={darkMode} />
-          <NavLink
-            label="Andre forhold"
-            active={viewMode === 'daily'}
-            onClick={() => setInfoMessage('Andre forhold er under arbeid – ingen data tilgjengelig ennå.')}
-            darkMode={darkMode}
-          />
-          <NavLink
-            label="Kart"
-            active={viewMode === 'hourly'}
-            onClick={() => setInfoMessage('Kart er under arbeid – ingen data tilgjengelig ennå.')}
-            darkMode={darkMode}
-          />
-          {['21-dagers varsel', 'Hav og kyst', 'Detaljer', 'Statistikk'].map((label) => (
+        {!isMobile && (
+          <section aria-label="Navigasjon" className="flex flex-wrap items-center gap-3">
+            <NavLink label="Varsel" active={viewMode === 'all'} onClick={() => setViewMode('all')} darkMode={darkMode} />
             <NavLink
-              key={label}
-              label={label}
+              label="Andre forhold"
+              active={viewMode === 'daily'}
+              onClick={() => setInfoMessage('Andre forhold er under arbeid – ingen data tilgjengelig ennå.')}
               darkMode={darkMode}
-              onClick={() => setInfoMessage(`${label} er under arbeid – ingen data tilgjengelig ennå.`)}
             />
-          ))}
-          <button
-            type="button"
-            onClick={() => {
-              setInfoMessage('Sorter på varme først er under arbeid – ingen data tilgjengelig ennå.')
-            }}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
-              darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
-            }`}
-            aria-pressed={sortWarmFirst}
-          >
-            Sorter på varme først
-          </button>
-        </section>
+            <NavLink
+              label="Kart"
+              active={viewMode === 'hourly'}
+              onClick={() => setInfoMessage('Kart er under arbeid – ingen data tilgjengelig ennå.')}
+              darkMode={darkMode}
+            />
+            {['21-dagers varsel', 'Hav og kyst', 'Detaljer', 'Statistikk'].map((label) => (
+              <NavLink
+                key={label}
+                label={label}
+                darkMode={darkMode}
+                onClick={() => setInfoMessage(`${label} er under arbeid – ingen data tilgjengelig ennå.`)}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => {
+                setInfoMessage('Sorter på varme først er under arbeid – ingen data tilgjengelig ennå.')
+              }}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
+                darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+              }`}
+              aria-pressed={sortWarmFirst}
+            >
+              Sorter på varme først
+            </button>
+          </section>
+        )}
 
         {infoMessage && (
           <div

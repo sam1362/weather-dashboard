@@ -60,7 +60,7 @@ test('viser dashboard, skjelett og data', async ({ page }) => {
   await expect(page.getByRole('article', { name: 'Nåværende vær' })).toBeVisible()
 
   // Søk etter Bergen og forvent at kortet viser byen
-  await page.getByLabel('Søk etter sted').fill('Bergen')
+  await page.getByRole('textbox', { name: 'Søk etter sted' }).fill('Bergen')
   await page.getByRole('button', { name: 'Søk nå' }).click()
 
   await expect(page.getByRole('article', { name: 'Nåværende vær' })).toContainText('Bergen')

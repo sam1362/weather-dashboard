@@ -40,7 +40,7 @@ export const WeatherSearch = ({
   return (
     // Skjema for søk + forslag
     <form
-      className="relative z-30 glass flex flex-row flex-wrap items-center gap-2 rounded-2xl p-4 shadow-lg"
+      className="relative z-30 glass flex w-full flex-row flex-nowrap items-center gap-2 rounded-2xl p-4 shadow-lg"
       role="search"
       aria-label="Søk etter sted"
       onSubmit={(event) => {
@@ -110,9 +110,27 @@ export const WeatherSearch = ({
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={onUseCurrentLocation}
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            event.nativeEvent.stopImmediatePropagation?.()
+            // Hindrer at mousedown sender submit på enkelte mobiler
+            ;(event as React.MouseEvent<HTMLButtonElement>).currentTarget.blur()
+            onUseCurrentLocation?.()
+          }}
+          onMouseDown={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+          }}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              event.stopPropagation()
+              onUseCurrentLocation?.()
+            }
+          }}
           className={cn(
-            'relative h-12 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
+            'relative h-12 min-w-[48px] rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
             darkMode
               ? 'bg-white/5 text-slate-200 hover:bg-white/10'
               : 'bg-slate-100 text-slate-800 hover:bg-slate-200',
@@ -125,7 +143,7 @@ export const WeatherSearch = ({
         <button
           type="submit"
           className={cn(
-            'flex h-12 items-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500',
+            'flex h-12 min-w-[120px] items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 whitespace-nowrap',
             loading
               ? darkMode
                 ? 'bg-white/10 text-slate-400'

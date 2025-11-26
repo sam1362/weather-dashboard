@@ -120,13 +120,13 @@ const Index = () => {
       <div
         className={`mx-auto flex max-w-6xl flex-col gap-8 ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}
       >
-        <header className="flex items-start justify-between gap-4">
+        <header className="flex flex-wrap items-start justify-between gap-3">
           <div className="max-w-xl">
-            <h1 className={`text-3xl font-bold md:text-4xl ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            <h1 className={`text-3xl font-bold leading-tight md:text-4xl ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               Værdashboard
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-shrink-0 items-center gap-2">
             <button
               type="button"
               onClick={() => setDarkMode((prev) => !prev)}
@@ -195,40 +195,42 @@ const Index = () => {
           </section>
         )}
 
-        <WeatherSearch
-          value={query}
-          onChange={(value) => {
-            setQuery(value)
-            setShowSuggestions(true)
-          }}
-          onSubmit={() => refresh(query)}
-          loading={loading}
-          darkMode={darkMode}
-          disableTooltip={isMobile}
-          suggestions={showSuggestions ? suggestions : []}
-          onSelectSuggestion={(value) => {
-            setQuery('')
-            refresh(value)
-            setSuggestions([])
-            setShowSuggestions(false)
-          }}
-          onUseCurrentLocation={() => {
-            setQuery('')
-            setSuggestions([])
-            setShowSuggestions(false)
-            if (typeof navigator !== 'undefined' && navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                  const base = { lat: pos.coords.latitude, lon: pos.coords.longitude }
-                  setQuery('')
-                  refreshByCoords({ ...base, name: 'Din posisjon' })
-                },
-                () => undefined,
-                { timeout: 5000 },
-              )
-            }
-          }}
-        />
+        <div className="w-full">
+          <WeatherSearch
+            value={query}
+            onChange={(value) => {
+              setQuery(value)
+              setShowSuggestions(true)
+            }}
+            onSubmit={() => refresh(query)}
+            loading={loading}
+            darkMode={darkMode}
+            disableTooltip={isMobile}
+            suggestions={showSuggestions ? suggestions : []}
+            onSelectSuggestion={(value) => {
+              setQuery('')
+              refresh(value)
+              setSuggestions([])
+              setShowSuggestions(false)
+            }}
+            onUseCurrentLocation={() => {
+              setQuery('')
+              setSuggestions([])
+              setShowSuggestions(false)
+              if (typeof navigator !== 'undefined' && navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  (pos) => {
+                    const base = { lat: pos.coords.latitude, lon: pos.coords.longitude }
+                    setQuery('')
+                    refreshByCoords({ ...base, name: 'Din posisjon' })
+                  },
+                  () => undefined,
+                  { timeout: 5000 },
+                )
+              }
+            }}
+          />
+        </div>
 
         {!isMobile && (
           <section aria-label="Navigasjon" className="flex flex-wrap items-center gap-3">

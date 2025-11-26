@@ -11,7 +11,7 @@ import { useToast } from '../hooks/use-toast'
 import { useWeather } from '../hooks/useWeather'
 import { useMobile } from '../hooks/use-mobile'
 import { searchCoordinatesList } from '../lib/api'
-import type { DailyForecastItem, TemperatureUnit } from '../types/weather'
+import type { DailyForecastItem } from '../types/weather'
 
 type ViewMode = 'all' | 'daily' | 'hourly'
 
@@ -112,8 +112,6 @@ const Index = () => {
     }
   }, [data?.hourly, hourFilter])
 
-  const toggleUnit = (next: TemperatureUnit) => setUnit(next)
-
   return (
     // Layout for hovedsiden
     <main className={`min-h-screen px-4 py-10 md:px-10 lg:px-16 ${darkMode ? 'bg-midnight' : 'bg-white'}`}>
@@ -126,7 +124,39 @@ const Index = () => {
               Værdashboard
             </h1>
           </div>
-          <div className="flex flex-shrink-0 items-center gap-2">
+          <div className="ml-auto flex flex-shrink-0 items-center gap-2">
+            <div className={darkMode ? 'rounded-full bg-white/5 p-1' : 'rounded-full bg-slate-100 p-1'}>
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
+                  unit === 'celsius'
+                    ? 'bg-white text-midnight'
+                    : darkMode
+                      ? 'text-slate-200 hover:text-white'
+                      : 'text-slate-700 hover:text-slate-900'
+                }`}
+                onClick={() => setUnit('celsius')}
+                aria-pressed={unit === 'celsius'}
+                aria-label="Vis grader i Celsius"
+              >
+                °C
+              </button>
+              <button
+                type="button"
+                className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
+                  unit === 'fahrenheit'
+                    ? 'bg-white text-midnight'
+                    : darkMode
+                      ? 'text-slate-200 hover:text-white'
+                      : 'text-slate-700 hover:text-slate-900'
+                }`}
+                onClick={() => setUnit('fahrenheit')}
+                aria-pressed={unit === 'fahrenheit'}
+                aria-label="Vis grader i Fahrenheit"
+              >
+                °F
+              </button>
+            </div>
             <button
               type="button"
               onClick={() => setDarkMode((prev) => !prev)}
@@ -305,7 +335,6 @@ const Index = () => {
           <CurrentWeather
             location={locationLabel}
             unit={unit}
-            onUnitChange={toggleUnit}
             loading={loading}
             darkMode={darkMode}
             temperature={data?.current.temperature ?? 0}

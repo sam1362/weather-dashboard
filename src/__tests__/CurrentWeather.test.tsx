@@ -9,7 +9,6 @@ describe('CurrentWeather', () => {
       <CurrentWeather
         location="Oslo"
         unit="celsius"
-        onUnitChange={() => undefined}
         temperature={12}
         symbol="sunny"
         feelsLike={11}

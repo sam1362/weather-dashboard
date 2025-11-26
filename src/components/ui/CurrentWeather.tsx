@@ -21,7 +21,6 @@ interface CurrentWeatherProps {
   location: string
   unit: TemperatureUnit
   loading?: boolean
-  onUnitChange: (unit: TemperatureUnit) => void
   temperature: number
   symbol: string
   feelsLike: number
@@ -57,7 +56,6 @@ export const CurrentWeather = ({
   location,
   unit,
   loading,
-  onUnitChange,
   temperature,
   symbol,
   feelsLike,
@@ -105,43 +103,13 @@ export const CurrentWeather = ({
               darkMode ? 'from-white/5 to-white/0' : 'from-slate-100 to-white'
             }`}
           >
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between">
             <div>
               <p className={`text-xs uppercase tracking-wide ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>Nå</p>
               <h2 className={`text-2xl font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{location}</h2>
               <p className={`text-sm ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                 Oppdatert {formatHourLabel(time)}
               </p>
-            </div>
-            <div className={darkMode ? 'rounded-full bg-white/5 p-1' : 'rounded-full bg-slate-100 p-1'}>
-              <button
-                type="button"
-                className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
-                  unit === 'celsius'
-                    ? 'bg-white text-midnight'
-                    : darkMode
-                      ? 'text-slate-200 hover:text-white'
-                      : 'text-slate-700 hover:text-slate-900'
-                }`}
-                onClick={() => onUnitChange('celsius')}
-                aria-pressed={unit === 'celsius'}
-              >
-                °C
-              </button>
-              <button
-                type="button"
-                className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
-                  unit === 'fahrenheit'
-                    ? 'bg-white text-midnight'
-                    : darkMode
-                      ? 'text-slate-200 hover:text-white'
-                      : 'text-slate-700 hover:text-slate-900'
-                }`}
-                onClick={() => onUnitChange('fahrenheit')}
-                aria-pressed={unit === 'fahrenheit'}
-              >
-                °F
-              </button>
             </div>
           </div>
           <div className="mt-6 flex items-center gap-4">

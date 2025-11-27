@@ -232,7 +232,11 @@ const Index = () => {
               setQuery(value)
               setShowSuggestions(true)
             }}
-            onSubmit={() => refresh(query)}
+            onSubmit={() => {
+              const trimmed = query.trim()
+              if (!trimmed) return
+              refresh(trimmed)
+            }}
             loading={loading}
             darkMode={darkMode}
             disableTooltip={isMobile}

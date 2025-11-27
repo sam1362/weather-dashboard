@@ -143,14 +143,14 @@ export const WeatherSearch = ({
         <button
           type="submit"
           className={cn(
-            'flex h-12 min-w-[120px] items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 whitespace-nowrap',
+            'flex h-12 min-w-[120px] items-center justify-center gap-2 rounded-xl px-4 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 whitespace-nowrap',
             loading
               ? darkMode
                 ? 'bg-white/10 text-slate-400'
                 : 'bg-slate-200 text-slate-500'
               : darkMode
-                ? 'bg-teal-600 text-white hover:bg-teal-500 shadow-glow'
-                : 'bg-teal-600 text-white hover:bg-teal-500 shadow-glow',
+                ? 'bg-sky-700 text-white hover:bg-sky-600 shadow-glow'
+                : 'bg-sky-700 text-white hover:bg-sky-600 shadow-glow',
           )}
           aria-busy={loading}
         >

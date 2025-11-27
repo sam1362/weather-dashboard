@@ -13,53 +13,30 @@ import { useMobile } from '../hooks/use-mobile'
 import { searchCoordinatesList } from '../lib/api'
 import type { DailyForecastItem } from '../types/weather'
 
-// --- Sidevisningstyper ---
 type ViewMode = 'all' | 'daily' | 'hourly'
 
-// HOVEDKOMPONENT — Hele siden 
-
-
 const Index = () => {
-  // --- Søk & navigasjon ---
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = useState<ViewMode>('all')
   const [sortWarmFirst] = useState(false)
   const [darkMode, setDarkMode] = useState(true)
 
-  // --- Autocomplete-forslag ---
   const [suggestions, setSuggestions] = useState<{ label: string; subLabel?: string }[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
 
-  // --- Mobil meny ---
   const [showMenu, setShowMenu] = useState(false)
-
-  // --- Filter for time-for-time ---
   const [hourFilter, setHourFilter] = useState<HourFilter>('all')
 
-  // --- Debounce av søket ---
   const debouncedQuery = useDebounce(query, 0)
   const firstRun = useRef(true)
-
-  // --- Mobil-deteksjon ---
   const isMobile = useMobile(768)
 
-  // --- Værdata ---
   const { data, loading, error, refresh, refreshByCoords, unit, setUnit } = useWeather('Oslo')
-
-  // --- Toast-system ---
   const { toasts, pushToast, dismiss } = useToast()
-
-
-  //  Tema (light/dark)
-
 
   useEffect(() => {
     document.body.classList.toggle('light-mode', !darkMode)
   }, [darkMode])
-
-
-  // Autocomplete søk
-  
 
   useEffect(() => {
     if (firstRun.current) {
@@ -96,10 +73,6 @@ const Index = () => {
     return () => controller.abort()
   }, [debouncedQuery, refresh, showSuggestions])
 
-
-  //  Feil → Toast
- 
-
   useEffect(() => {
     if (error) {
       pushToast({
@@ -110,19 +83,11 @@ const Index = () => {
     }
   }, [error, pushToast])
 
- 
-  // Sortering av dager
-
-
   const dailyItems = useMemo<DailyForecastItem[]>(() => {
     const items = data?.daily ?? []
     if (sortWarmFirst) return [...items].sort((a, b) => b.max - a.max)
     return items
   }, [data?.daily, sortWarmFirst])
-
- 
-  //  Filtrering av time-for-time
- 
 
   const filteredHourly = useMemo(() => {
     const items = data?.hourly ?? []
@@ -138,25 +103,23 @@ const Index = () => {
   const showCurrent = loading || Boolean(data)
   const showDaily = viewMode === 'all' || viewMode === 'daily'
   const showHourly = viewMode === 'all' || viewMode === 'hourly'
-
   const locationLabel = data?.location.name ?? query
-
- 
-  // alle seksjoner får stabil minimumshøyde
-
 
   return (
     <main
-      className={`px-4 py-10 md:px-10 lg:px-16 ${darkMode ? 'bg-midnight' : 'bg-white'}`}
+      className={`px-4 pt-4 pb-10 md:pt-10 md:px-10 lg:px-16 ${
+        darkMode ? 'bg-midnight' : 'bg-white'
+      }`}
       style={{ minHeight: 1600 }}
     >
-      <div className={`mx-auto flex max-w-6xl flex-col gap-8 ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+      <div
+        className={`mx-auto flex max-w-6xl flex-col gap-2 md:gap-6 ${
+          darkMode ? 'text-slate-100' : 'text-slate-900'
+        }`}
+      >
 
         {/* HEADER */}
-    
         <header className="flex flex-wrap items-start justify-between gap-3">
-
-          {/* Tittel */}
           <h1 className={`text-3xl font-bold md:text-4xl ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             Værdashboard
           </h1>
@@ -184,7 +147,7 @@ const Index = () => {
               </button>
             </div>
 
-            {/* Tema-knapp */}
+            {/* Tema */}
             <button
               onClick={() => setDarkMode((p) => !p)}
               className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
@@ -195,7 +158,7 @@ const Index = () => {
               {darkMode ? 'Mørkt' : 'Lyst'}
             </button>
 
-            {/*  Mobilmeny-knapp */}
+            {/* Meny (Mobil) */}
             {isMobile && (
               <button
                 type="button"
@@ -212,9 +175,7 @@ const Index = () => {
           </div>
         </header>
 
-       
-        {/* MOBILMENY (Zero-CLS) */}
-      
+        {/* MOBILMENY */}
         {isMobile && (
           <section
             aria-label="Navigasjon"
@@ -236,10 +197,8 @@ const Index = () => {
           </section>
         )}
 
-
-        {/* SØKEFELT */}
-       
-        <section style={{ minHeight: 80 }}>
+        {/* SØK */}
+        <section style={{ minHeight: 80 }} className="mt-1 sm:mt-0">
           <WeatherSearch
             value={query}
             onChange={(v) => { setQuery(v); setShowSuggestions(true) }}
@@ -272,9 +231,7 @@ const Index = () => {
           />
         </section>
 
-  
-        {/* DESKTOP NAV */}
-       
+        {/* DESKTOP MENY */}
         {!isMobile && (
           <section className="flex flex-wrap items-center gap-3" style={{ minHeight: 48 }}>
             <NavLink label="Varsel" active={viewMode === 'all'} onClick={() => setViewMode('all')} darkMode={darkMode} />
@@ -288,9 +245,7 @@ const Index = () => {
           </section>
         )}
 
-   
-        {/* CURRENT WEATHER  */}
-       
+        {/* NÅVÆRENDE VÆR */}
         <section style={{ minHeight: 480 }}>
           {showCurrent && (
             <CurrentWeather
@@ -310,17 +265,14 @@ const Index = () => {
           )}
         </section>
 
-     
-        {/* FILTER  */}
-      
+        {/* FILTER */}
         {showHourly && (
           <section style={{ minHeight: 40 }}>
             <HourlyFilter value={hourFilter} onChange={setHourFilter} darkMode={darkMode} />
           </section>
         )}
 
-        {/* TIME-FOR-TIME  */}
-    
+        {/* TIME-FOR-TIME */}
         {showHourly && (
           <section style={{ minHeight: 420 }}>
             <HourlyForecast
@@ -332,9 +284,7 @@ const Index = () => {
           </section>
         )}
 
-       
-        {/*  DAGLIG VARSEL  */}
-      
+        {/* DAGLIG VARSEL */}
         <section style={{ minHeight: 460 }}>
           {showDaily && (
             <DailyForecast
@@ -346,17 +296,14 @@ const Index = () => {
           )}
         </section>
 
-        {/* Ingen data */}
-      
+        {/* INGEN DATA */}
         {!loading && !data && (
           <p className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-slate-300">
             Ingen data ennå – prøv et annet søk.
           </p>
         )}
 
-      
-        {/*  TOASTS */}
-        
+        {/* TOASTS */}
         <aside
           className="pointer-events-none fixed bottom-6 right-6 z-50 flex flex-col gap-3"
           aria-live="assertive"

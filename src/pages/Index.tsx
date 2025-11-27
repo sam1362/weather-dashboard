@@ -7,9 +7,9 @@ import { NavLink } from '../components/ui/NavLink'
 import { WeatherSearch } from '../components/ui/WeatherSearch'
 import { HourlyFilter, type HourFilter } from '../components/ui/HourlyFilter'
 import { useDebounce } from '../hooks/useDebounce'
-import { useToast } from '../hooks/use-toast'
+import { useToast } from '../hooks/useToast'
 import { useWeather } from '../hooks/useWeather'
-import { useMobile } from '../hooks/use-mobile'
+import { useMobile } from '../hooks/useMobile'
 import { searchCoordinatesList } from '../lib/api'
 import type { DailyForecastItem } from '../types/weather'
 
@@ -113,7 +113,7 @@ const Index = () => {
       style={{ minHeight: 1600 }}
     >
       <div
-        className={`mx-auto flex max-w-6xl flex-col gap-6 sm:gap-7 md:gap-8 ${
+        className={`mx-auto flex max-w-6xl flex-col gap-5 sm:gap-6 md:gap-6 lg:gap-6 ${
           darkMode ? 'text-slate-100' : 'text-slate-900'
         }`}
       >
@@ -248,7 +248,7 @@ const Index = () => {
         )}
 
         {/* NÅVÆRENDE VÆR */}
-        <section style={{ minHeight: 480 }}>
+        <section style={{ minHeight: 380 }}>
           {showCurrent && (
             <CurrentWeather
               location={locationLabel}
@@ -276,7 +276,7 @@ const Index = () => {
 
         {/* TIME-FOR-TIME */}
         {showHourly && (
-          <section style={{ minHeight: 420 }}>
+          <section style={{ minHeight: 380 }}>
             <HourlyForecast
               unit={unit}
               items={filteredHourly}
@@ -287,7 +287,7 @@ const Index = () => {
         )}
 
         {/* DAGLIG VARSEL */}
-        <section style={{ minHeight: 460 }}>
+        <section style={{ minHeight: 420 }}>
           {showDaily && (
             <DailyForecast
               unit={unit}

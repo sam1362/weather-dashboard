@@ -106,9 +106,9 @@ export const CurrentWeather = ({
   const feelsRounded = roundTemp(feelsLike, "celsius")
   const tempTone = tempToneClass(tempRounded, darkMode)
 
-  // Final heights: tuned to your UI to eliminate CLS
-  const SECTION_HEIGHT = "lg:h-[510px]"   // whole widget height
-  const GRID_HEIGHT = "lg:h-[410px]"      // grid height (both cards fit perfectly)
+  // Final heights: tuned smaller to match hero layout
+  const SECTION_HEIGHT = "lg:h-[380px]"   // whole widget height
+  const GRID_HEIGHT = "lg:h-[300px]"      // grid height (both cards fit perfectly)
 
   // Skeleton with identical height → zero CLS
   if (loading) {
@@ -121,9 +121,9 @@ export const CurrentWeather = ({
           `}
         />
 
-        <div className="relative z-10 p-6 md:p-8 flex flex-col gap-8">
-          <div className="rounded-2xl bg-white/10 animate-pulse h-[260px] lg:h-[410px]" />
-          <div className="grid gap-3 sm:grid-cols-2 h-[260px] lg:h-[410px]">
+        <div className="relative z-10 p-6 md:p-8 flex flex-col gap-6">
+          <div className="rounded-2xl bg-white/10 animate-pulse h-[220px] lg:h-[300px]" />
+          <div className="grid gap-3 sm:grid-cols-2 h-[220px] lg:h-[300px]">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-20 rounded-2xl bg-white/10 animate-pulse" />
             ))}
@@ -134,7 +134,7 @@ export const CurrentWeather = ({
   }
 
   return (
-       <article className="relative overflow-hidden rounded-3xl min-h-[510px] lg:h-[510px]">
+       <article className="relative overflow-hidden rounded-3xl min-h-[360px] lg:h-[380px]">
       
       {/* Glass layer */}
       <div
@@ -144,7 +144,7 @@ export const CurrentWeather = ({
         `}
       />
 
-      <div className="relative z-10 p-6 md:p-8 flex flex-col gap-8">
+      <div className="relative z-10 p-6 md:p-8 flex flex-col gap-6">
 
         {/* GRID — fixed height on desktop */}
         <div className={`grid gap-8 lg:grid-cols-[2fr_1fr] ${GRID_HEIGHT}`}>

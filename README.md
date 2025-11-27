@@ -101,11 +101,4 @@ E2E-testene mocker både geokoding og MET-kallet, så de kjøres uten nettverk.
 - Geokoding: Open-meteo search-endepunkt.
 - Feil, avbrudd og timeouts håndteres i `useWeather` via AbortController.
 
----
 
-## Screenshot
-Legg inn eget skjermbilde i `docs/screenshot.png`, og inkluder:
-
-```md
-![Screenshot](./docs/screenshot.png)
-```

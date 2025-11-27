@@ -1,4 +1,4 @@
-import { AlertCircle, MoonStar, Sun } from 'lucide-react'
+import { MoonStar, Sun } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CurrentWeather } from '../components/ui/CurrentWeather'
 import { DailyForecast } from '../components/ui/DailyForecast'
@@ -13,40 +13,61 @@ import { useMobile } from '../hooks/use-mobile'
 import { searchCoordinatesList } from '../lib/api'
 import type { DailyForecastItem } from '../types/weather'
 
+// --- Sidevisningstyper ---
 type ViewMode = 'all' | 'daily' | 'hourly'
 
-// Hovedside for vær-dashboardet
+// HOVEDKOMPONENT — Hele siden 
+
+
 const Index = () => {
+  // --- Søk & navigasjon ---
   const [query, setQuery] = useState('')
   const [viewMode, setViewMode] = useState<ViewMode>('all')
   const [sortWarmFirst] = useState(false)
   const [darkMode, setDarkMode] = useState(true)
+
+  // --- Autocomplete-forslag ---
   const [suggestions, setSuggestions] = useState<{ label: string; subLabel?: string }[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+
+  // --- Mobil meny ---
   const [showMenu, setShowMenu] = useState(false)
-  const [infoMessage, setInfoMessage] = useState<string | null>(null)
+
+  // --- Filter for time-for-time ---
   const [hourFilter, setHourFilter] = useState<HourFilter>('all')
+
+  // --- Debounce av søket ---
   const debouncedQuery = useDebounce(query, 0)
   const firstRun = useRef(true)
+
+  // --- Mobil-deteksjon ---
   const isMobile = useMobile(768)
 
+  // --- Værdata ---
   const { data, loading, error, refresh, refreshByCoords, unit, setUnit } = useWeather('Oslo')
+
+  // --- Toast-system ---
   const { toasts, pushToast, dismiss } = useToast()
 
-  // Toggle lys/mørk modus på body
+
+  //  Tema (light/dark)
+
+
   useEffect(() => {
-    if (typeof document === 'undefined') return
     document.body.classList.toggle('light-mode', !darkMode)
   }, [darkMode])
 
-  // Hent stedsforslag når bruker skriver
+
+  // Autocomplete søk
+  
+
   useEffect(() => {
     if (firstRun.current) {
       firstRun.current = false
-      setQuery('')
       return
     }
     const controller = new AbortController()
+
     const run = async () => {
       if (debouncedQuery.trim().length < 1) {
         setSuggestions([])
@@ -55,128 +76,133 @@ const Index = () => {
 
       try {
         const result = await searchCoordinatesList(debouncedQuery, controller.signal)
+
         const unique = new Map<string, { label: string; subLabel?: string }>()
         result.forEach((item) => {
-          const sub = [item.admin1 ?? item.admin2, item.country ?? 'Norway'].filter(Boolean).join(', ')
+          const sub = [item.admin1 ?? item.admin2, item.country ?? 'Norway']
+            .filter(Boolean)
+            .join(', ')
           const key = `${item.name}-${sub}`
-          if (!unique.has(key)) {
-            unique.set(key, { label: item.name, subLabel: sub })
-          }
+          if (!unique.has(key)) unique.set(key, { label: item.name, subLabel: sub })
         })
+
         setSuggestions(Array.from(unique.values()))
       } catch {
         setSuggestions([])
       }
     }
+
     run()
     return () => controller.abort()
   }, [debouncedQuery, refresh, showSuggestions])
 
-  // Vis feil som toast
+
+  //  Feil → Toast
+ 
+
   useEffect(() => {
     if (error) {
       pushToast({
         title: 'Klarte ikke å hente værdata',
         description: error,
-        variant: 'error',
+        variant: 'error'
       })
     }
   }, [error, pushToast])
 
+ 
+  // Sortering av dager
+
+
   const dailyItems = useMemo<DailyForecastItem[]>(() => {
     const items = data?.daily ?? []
-    if (sortWarmFirst) {
-      return [...items].sort((a, b) => b.max - a.max)
-    }
+    if (sortWarmFirst) return [...items].sort((a, b) => b.max - a.max)
     return items
   }, [data?.daily, sortWarmFirst])
 
-  const showCurrent = loading || Boolean(data)
-  const showDaily = viewMode === 'all' || viewMode === 'daily'
-  const showHourly = viewMode === 'all' || viewMode === 'hourly'
-  const locationLabel = data?.location.name ?? query
+ 
+  //  Filtrering av time-for-time
+ 
 
   const filteredHourly = useMemo(() => {
     const items = data?.hourly ?? []
     switch (hourFilter) {
-      case 'cold':
-        return items.filter((h) => h.temp <= 0)
-      case 'warm':
-        return items.filter((h) => h.temp >= 15)
-      case 'precip':
-        return items.filter((h) => (h.precipitation ?? 0) > 0)
-      case 'dry':
-        return items.filter((h) => (h.precipitation ?? 0) === 0)
-      default:
-        return items
+      case 'cold': return items.filter((h) => h.temp <= 0)
+      case 'warm': return items.filter((h) => h.temp >= 15)
+      case 'precip': return items.filter((h) => (h.precipitation ?? 0) > 0)
+      case 'dry': return items.filter((h) => (h.precipitation ?? 0) === 0)
+      default: return items
     }
   }, [data?.hourly, hourFilter])
 
+  const showCurrent = loading || Boolean(data)
+  const showDaily = viewMode === 'all' || viewMode === 'daily'
+  const showHourly = viewMode === 'all' || viewMode === 'hourly'
+
+  const locationLabel = data?.location.name ?? query
+
+ 
+  // alle seksjoner får stabil minimumshøyde
+
+
   return (
-    // Layout for hovedsiden
-    <main className={`min-h-screen px-4 py-10 md:px-10 lg:px-16 ${darkMode ? 'bg-midnight' : 'bg-white'}`}>
-      <div
-        className={`mx-auto flex max-w-6xl flex-col gap-8 ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}
-      >
+    <main
+      className={`px-4 py-10 md:px-10 lg:px-16 ${darkMode ? 'bg-midnight' : 'bg-white'}`}
+      style={{ minHeight: 1600 }}
+    >
+      <div className={`mx-auto flex max-w-6xl flex-col gap-8 ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+
+        {/* HEADER */}
+    
         <header className="flex flex-wrap items-start justify-between gap-3">
-          <div className="max-w-xl">
-            <h1 className={`text-3xl font-bold leading-tight md:text-4xl ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-              Værdashboard
-            </h1>
-          </div>
-          <div className="ml-auto flex flex-shrink-0 items-center gap-2">
+
+          {/* Tittel */}
+          <h1 className={`text-3xl font-bold md:text-4xl ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+            Værdashboard
+          </h1>
+
+          <div className="ml-auto flex items-center gap-2">
+
+            {/* °C / °F */}
             <div className={darkMode ? 'rounded-full bg-white/5 p-1' : 'rounded-full bg-slate-100 p-1'}>
               <button
-                type="button"
-                className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
-                  unit === 'celsius'
-                    ? 'bg-white text-midnight'
-                    : darkMode
-                      ? 'text-slate-200 hover:text-white'
-                      : 'text-slate-700 hover:text-slate-900'
+                className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                  unit === 'celsius' ? 'bg-white text-midnight' : darkMode ? 'text-slate-200' : 'text-slate-700'
                 }`}
                 onClick={() => setUnit('celsius')}
-                aria-pressed={unit === 'celsius'}
-                aria-label="Vis grader i Celsius"
               >
                 °C
               </button>
+
               <button
-                type="button"
-                className={`rounded-full px-3 py-1 text-sm font-semibold transition ${
-                  unit === 'fahrenheit'
-                    ? 'bg-white text-midnight'
-                    : darkMode
-                      ? 'text-slate-200 hover:text-white'
-                      : 'text-slate-700 hover:text-slate-900'
+                className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                  unit === 'fahrenheit' ? 'bg-white text-midnight' : darkMode ? 'text-slate-200' : 'text-slate-700'
                 }`}
                 onClick={() => setUnit('fahrenheit')}
-                aria-pressed={unit === 'fahrenheit'}
-                aria-label="Vis grader i Fahrenheit"
               >
                 °F
               </button>
             </div>
+
+            {/* Tema-knapp */}
             <button
-              type="button"
-              onClick={() => setDarkMode((prev) => !prev)}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
-                darkMode
-                  ? 'bg-white/5 text-slate-200 hover:bg-white/10'
-                  : 'bg-slate-900 text-white hover:bg-slate-800'
+              onClick={() => setDarkMode((p) => !p)}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${
+                darkMode ? 'bg-white/5 text-slate-200' : 'bg-slate-900 text-white'
               }`}
-              aria-pressed={darkMode}
-              aria-label="Veksle tema"
             >
-              {darkMode ? <MoonStar className="h-4 w-4" aria-hidden /> : <Sun className="h-4 w-4" aria-hidden />}
+              {darkMode ? <MoonStar className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
               {darkMode ? 'Mørkt' : 'Lyst'}
             </button>
+
+            {/*  Mobilmeny-knapp */}
             {isMobile && (
               <button
                 type="button"
                 onClick={() => setShowMenu((prev) => !prev)}
-                className={`rounded-full p-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
-                  darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
+                className={`rounded-full p-3 text-sm font-semibold transition ${
+                  darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10'
+                          : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
                 }`}
                 aria-label="Meny"
               >
@@ -186,64 +212,48 @@ const Index = () => {
           </div>
         </header>
 
-        {isMobile && showMenu && (
-          <section aria-label="Navigasjon" className="flex flex-col gap-2">
-            <NavLink label="Varsel" active={viewMode === 'all'} onClick={() => { setViewMode('all'); setShowMenu(false) }} darkMode={darkMode} />
-            <NavLink
-              label="Andre forhold"
-              active={viewMode === 'daily'}
-              onClick={() => { setInfoMessage('Andre forhold er under arbeid – ingen data tilgjengelig ennå.'); setShowMenu(false) }}
-              darkMode={darkMode}
-            />
-            <NavLink
-              label="Kart"
-              active={viewMode === 'hourly'}
-              onClick={() => { setInfoMessage('Kart er under arbeid – ingen data tilgjengelig ennå.'); setShowMenu(false) }}
-              darkMode={darkMode}
-            />
-            {['21-dagers varsel', 'Hav og kyst', 'Detaljer', 'Statistikk'].map((label) => (
-              <NavLink
-                key={label}
-                label={label}
-                darkMode={darkMode}
-                onClick={() => { setInfoMessage(`${label} er under arbeid – ingen data tilgjengelig ennå.`); setShowMenu(false) }}
-              />
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                setInfoMessage('Sorter på varme først er under arbeid – ingen data tilgjengelig ennå.')
-                setShowMenu(false)
-              }}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
-                darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
-              }`}
-              aria-pressed={sortWarmFirst}
-            >
-              Sorter på varme først
-            </button>
+       
+        {/* MOBILMENY (Zero-CLS) */}
+      
+        {isMobile && (
+          <section
+            aria-label="Navigasjon"
+            style={{ minHeight: showMenu ? 150 : 0 }}
+            className="flex flex-col gap-2 overflow-hidden transition-all duration-200"
+          >
+            {showMenu && (
+              <>
+                <NavLink label="Varsel" active={viewMode === 'all'} onClick={() => { setViewMode('all'); setShowMenu(false) }} darkMode={darkMode} />
+                <NavLink label="Andre forhold" onClick={() => { setShowMenu(false) }} darkMode={darkMode} />
+                <NavLink label="Kart" onClick={() => { setShowMenu(false) }} darkMode={darkMode} />
+                <NavLink label="21-dagers varsel" onClick={() => { setShowMenu(false) }} darkMode={darkMode} />
+                <NavLink label="Hav og kyst" onClick={() => { setShowMenu(false) }} darkMode={darkMode} />
+                <NavLink label="Detaljer" onClick={() => { setShowMenu(false) }} darkMode={darkMode} />
+                <NavLink label="Statistikk" onClick={() => { setShowMenu(false) }} darkMode={darkMode} />
+                <NavLink label="Sorter på varme først" onClick={() => { setShowMenu(false) }} darkMode={darkMode} />
+              </>
+            )}
           </section>
         )}
 
-        <div className="w-full">
+
+        {/* SØKEFELT */}
+       
+        <section style={{ minHeight: 80 }}>
           <WeatherSearch
             value={query}
-            onChange={(value) => {
-              setQuery(value)
-              setShowSuggestions(true)
-            }}
+            onChange={(v) => { setQuery(v); setShowSuggestions(true) }}
             onSubmit={() => {
-              const trimmed = query.trim()
-              if (!trimmed) return
-              refresh(trimmed)
+              const q = query.trim()
+              if (q) refresh(q)
             }}
             loading={loading}
             darkMode={darkMode}
             disableTooltip={isMobile}
             suggestions={showSuggestions ? suggestions : []}
-            onSelectSuggestion={(value) => {
+            onSelectSuggestion={(v) => {
               setQuery('')
-              refresh(value)
+              refresh(v)
               setSuggestions([])
               setShowSuggestions(false)
             }}
@@ -251,138 +261,121 @@ const Index = () => {
               setQuery('')
               setSuggestions([])
               setShowSuggestions(false)
-              if (typeof navigator !== 'undefined' && navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                  (pos) => {
-                    const base = { lat: pos.coords.latitude, lon: pos.coords.longitude }
-                    setQuery('')
-                    refreshByCoords({ ...base, name: 'Din posisjon' })
-                  },
-                  () => undefined,
-                  { timeout: 5000 },
-                )
-              }
+              navigator.geolocation?.getCurrentPosition((pos) => {
+                refreshByCoords({
+                  lat: pos.coords.latitude,
+                  lon: pos.coords.longitude,
+                  name: 'Din posisjon'
+                })
+              })
             }}
           />
-        </div>
+        </section>
 
+  
+        {/* DESKTOP NAV */}
+       
         {!isMobile && (
-          <section aria-label="Navigasjon" className="flex flex-wrap items-center gap-3">
+          <section className="flex flex-wrap items-center gap-3" style={{ minHeight: 48 }}>
             <NavLink label="Varsel" active={viewMode === 'all'} onClick={() => setViewMode('all')} darkMode={darkMode} />
-            <NavLink
-              label="Andre forhold"
-              active={viewMode === 'daily'}
-              onClick={() => setInfoMessage('Andre forhold er under arbeid – ingen data tilgjengelig ennå.')}
-              darkMode={darkMode}
-            />
-            <NavLink
-              label="Kart"
-              active={viewMode === 'hourly'}
-              onClick={() => setInfoMessage('Kart er under arbeid – ingen data tilgjengelig ennå.')}
-              darkMode={darkMode}
-            />
-            {['21-dagers varsel', 'Hav og kyst', 'Detaljer', 'Statistikk'].map((label) => (
-              <NavLink
-                key={label}
-                label={label}
-                darkMode={darkMode}
-                onClick={() => setInfoMessage(`${label} er under arbeid – ingen data tilgjengelig ennå.`)}
-              />
-            ))}
-            <button
-              type="button"
-              onClick={() => {
-                setInfoMessage('Sorter på varme først er under arbeid – ingen data tilgjengelig ennå.')
-              }}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
-                darkMode ? 'bg-white/5 text-slate-200 hover:bg-white/10' : 'bg-slate-100 text-slate-800 hover:bg-slate-200'
-              }`}
-              aria-pressed={sortWarmFirst}
-            >
-              Sorter på varme først
-            </button>
+            <NavLink label="Andre forhold" onClick={() => undefined} darkMode={darkMode} />
+            <NavLink label="Kart" onClick={() => undefined} darkMode={darkMode} />
+            <NavLink label="21-dagers varsel" onClick={() => undefined} darkMode={darkMode} />
+            <NavLink label="Hav og kyst" onClick={() => undefined} darkMode={darkMode} />
+            <NavLink label="Detaljer" onClick={() => undefined} darkMode={darkMode} />
+            <NavLink label="Statistikk" onClick={() => undefined} darkMode={darkMode} />
+            <NavLink label="Sorter på varme først" onClick={() => undefined} darkMode={darkMode} />
           </section>
         )}
 
-        {infoMessage && (
-          <div
-            className={`flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm ${
-              darkMode ? 'bg-white/10 text-slate-100' : 'bg-slate-100 text-slate-900'
-            }`}
-            role="status"
-          >
-            <div>
-              <p className="font-semibold">Info</p>
-              <p className="text-sm">{infoMessage}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setInfoMessage(null)}
-              className="text-xs font-semibold underline"
-            >
-              Lukk
-            </button>
-          </div>
-        )}
+   
+        {/* CURRENT WEATHER  */}
+       
+        <section style={{ minHeight: 480 }}>
+          {showCurrent && (
+            <CurrentWeather
+              location={locationLabel}
+              unit={unit}
+              loading={loading}
+              darkMode={darkMode}
+              temperature={data?.current.temperature ?? 0}
+              symbol={data?.current.symbol ?? 'cloudy'}
+              feelsLike={data?.current.feelsLike ?? 0}
+              humidity={data?.current.humidity}
+              windSpeed={data?.current.windSpeed}
+              pressure={data?.current.pressure}
+              precipitation={data?.current.precipitation}
+              time={data?.current.time ?? new Date().toISOString()}
+            />
+          )}
+        </section>
 
-        {error && (
-          <div
-            role="alert"
-            className="flex items-center gap-3 rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-100"
-          >
-            <AlertCircle className="h-5 w-5" aria-hidden />
-            <p>{error}</p>
-          </div>
-        )}
-
-        {showCurrent && (
-          <CurrentWeather
-            location={locationLabel}
-            unit={unit}
-            loading={loading}
-            darkMode={darkMode}
-            temperature={data?.current.temperature ?? 0}
-            symbol={data?.current.symbol ?? 'cloudy'}
-            feelsLike={data?.current.feelsLike ?? 0}
-            humidity={data?.current.humidity}
-            windSpeed={data?.current.windSpeed}
-            pressure={data?.current.pressure}
-            precipitation={data?.current.precipitation}
-            time={data?.current.time ?? new Date().toISOString()}
-          />
-        )}
-
-        {showHourly && <HourlyFilter value={hourFilter} onChange={setHourFilter} darkMode={darkMode} />}
-
+     
+        {/* FILTER  */}
+      
         {showHourly && (
-          <HourlyForecast unit={unit} items={filteredHourly} loading={loading} darkMode={darkMode} />
+          <section style={{ minHeight: 40 }}>
+            <HourlyFilter value={hourFilter} onChange={setHourFilter} darkMode={darkMode} />
+          </section>
         )}
 
-        {showDaily && <DailyForecast unit={unit} items={dailyItems} loading={loading} darkMode={darkMode} />}
+        {/* TIME-FOR-TIME  */}
+    
+        {showHourly && (
+          <section style={{ minHeight: 420 }}>
+            <HourlyForecast
+              unit={unit}
+              items={filteredHourly}
+              loading={loading}
+              darkMode={darkMode}
+            />
+          </section>
+        )}
 
+       
+        {/*  DAGLIG VARSEL  */}
+      
+        <section style={{ minHeight: 460 }}>
+          {showDaily && (
+            <DailyForecast
+              unit={unit}
+              items={dailyItems}
+              loading={loading}
+              darkMode={darkMode}
+            />
+          )}
+        </section>
+
+        {/* Ingen data */}
+      
         {!loading && !data && (
           <p className="rounded-2xl bg-white/5 px-4 py-3 text-sm text-slate-300">
             Ingen data ennå – prøv et annet søk.
           </p>
         )}
 
+      
+        {/*  TOASTS */}
+        
         <aside
           className="pointer-events-none fixed bottom-6 right-6 z-50 flex flex-col gap-3"
           aria-live="assertive"
-          aria-label="Varsler"
         >
           {toasts.map((toast) => (
             <div
               key={toast.id}
               className={`pointer-events-auto w-80 rounded-2xl px-4 py-3 shadow-lg ${
-                toast.variant === 'error' ? 'bg-red-500 text-white' : 'bg-white text-midnight'
+                toast.variant === 'error'
+                  ? 'bg-red-500 text-white'
+                  : 'bg-white text-midnight'
               }`}
-              role="status"
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-sm font-semibold">{toast.title}</p>
-                  {toast.description && <p className="text-xs text-slate-800">{toast.description}</p>}
+                  {toast.description && (
+                    <p className="text-xs text-slate-800">{toast.description}</p>
+                  )}
                 </div>
                 <button
                   type="button"

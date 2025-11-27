@@ -30,10 +30,27 @@ body.light-mode {
 }
 
 .glass {
-  background: rgba(17, 26, 49, 0.75);
+  position: relative;
+  overflow: hidden;
+  background: rgba(17, 26, 49, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.04);
-  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.28);
+}
+
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  backdrop-filter: blur(10px);
+  background: transparent;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.glass > * {
+  position: relative;
+  z-index: 1;
 }
 
 body.light-mode .glass {

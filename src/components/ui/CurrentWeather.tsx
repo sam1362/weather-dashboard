@@ -158,43 +158,42 @@ export const CurrentWeather = ({
               ${darkMode ? "from-white/5 to-white/0" : "from-slate-100 to-white"}
             `}
           >
-            <div className="grid gap-4 md:grid-cols-[auto,1fr] items-center">
-
-              {/* Ikon */}
-              <div
-                className={`
-                  rounded-2xl p-4 shadow-inner w-fit
-                  ${darkMode ? "bg-white/10 text-white" : "bg-slate-100 text-slate-800"}
-                `}
-              >
-                {iconForSymbol(symbol)}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-start justify-between">
+                <div className="flex flex-col gap-1">
+                  <p className={`text-xs uppercase tracking-wide ${darkMode ? "text-slate-400" : "text-slate-600"}`}>Nå</p>
+                  <p className={`text-2xl font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{location}</p>
+                  <p className={`text-sm ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
+                    Oppdatert {formatHourLabel(time)}
+                  </p>
+                </div>
               </div>
 
-              {/* Tekster */}
-              <div className="flex flex-col gap-1">
-                <p className={`text-2xl font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>
-                  {location}
-                </p>
+              <p className={`text-sm capitalize ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
+                {symbol.replace(/[-_]/g, " ")}
+              </p>
 
-                <p className={`text-sm ${darkMode ? "text-slate-300" : "text-slate-600"}`}>
-                  Oppdatert {formatHourLabel(time)}
-                </p>
-
-                <p className={`text-sm capitalize ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
-                  {symbol.replace(/[-_]/g, " ")}
-                </p>
-
-                <p className={`text-6xl font-bold leading-tight ${tempTone}`}>
-                  {tempLabel(temperature, unit)}
-                </p>
-
-                <p className={`text-sm ${darkMode ? "text-slate-300" : "text-slate-700"}`}>
-                  Føles som{" "}
-                  <span className={tempToneClass(feelsRoundedC, darkMode)}>
-                    {tempLabel(feelsLike, unit)}
-                  </span>{" "}
-                  • {tempLabel(temperature, otherUnit)}
-                </p>
+              <div className="flex items-center gap-4 md:gap-6">
+                <div
+                  className={`
+                    rounded-2xl p-4 shadow-inner w-fit
+                    ${darkMode ? "bg-white/10 text-white" : "bg-slate-100 text-slate-800"}
+                  `}
+                >
+                  {iconForSymbol(symbol)}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <p className={`text-6xl font-bold leading-tight ${tempTone}`}>
+                    {tempLabel(temperature, unit)}
+                  </p>
+                  <p className={`text-sm ${darkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    Føles som{" "}
+                    <span className={tempToneClass(feelsRoundedC, darkMode)}>
+                      {tempLabel(feelsLike, unit)}
+                    </span>{" "}
+                    • {tempLabel(temperature, otherUnit)}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

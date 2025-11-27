@@ -113,12 +113,13 @@ const Index = () => {
       style={{ minHeight: 1600 }}
     >
       <div
-        className={`mx-auto flex max-w-6xl flex-col gap-2 md:gap-6 ${
+        className={`mx-auto flex max-w-6xl flex-col gap-6 sm:gap-7 md:gap-8 ${
           darkMode ? 'text-slate-100' : 'text-slate-900'
         }`}
       >
 
-        {/* HEADER */}
+        {/* HEADER + MOBILMENY + SØK (eget gap for mobil) */}
+        <div className="flex flex-col gap-2 sm:gap-4">
         <header className="flex flex-wrap items-start justify-between gap-3">
           <h1 className={`text-3xl font-bold md:text-4xl ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             Værdashboard
@@ -230,6 +231,7 @@ const Index = () => {
             }}
           />
         </section>
+        </div>
 
         {/* DESKTOP MENY */}
         {!isMobile && (

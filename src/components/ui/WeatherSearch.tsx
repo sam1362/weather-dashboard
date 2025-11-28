@@ -1,4 +1,4 @@
-import { Search, Compass, MapPin, LocateFixed } from 'lucide-react'
+import { Search, Compass, MapPin } from 'lucide-react'
 import { useCallback, type KeyboardEvent } from 'react'
 import { cn } from '../../lib/utils'
 
@@ -149,7 +149,7 @@ export const WeatherSearch = ({
         aria-label="Bruk min posisjon"
         data-tooltip={disableTooltip ? undefined : "Bruk min posisjon"}
       >
-        <LocateFixed className="block h-5 w-5" aria-hidden />
+          <MapPin className="block h-5 w-5" aria-hidden />
       </button>
 
       {/* Søk-knapp */}

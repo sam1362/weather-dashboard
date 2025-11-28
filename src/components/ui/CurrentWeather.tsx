@@ -113,7 +113,7 @@ export const CurrentWeather = ({
   // Skeleton with identical height → zero CLS
   if (loading) {
     return (
-      <article className={`relative overflow-hidden rounded-3xl ${SECTION_HEIGHT}`}>
+      <article className={`relative overflow-hidden rounded-3xl ${SECTION_HEIGHT}`} aria-label="Nåværende vær">
         <div
           className={`
             absolute inset-0 rounded-3xl backdrop-blur-xl
@@ -134,7 +134,7 @@ export const CurrentWeather = ({
   }
 
   return (
-       <article className="relative overflow-hidden rounded-3xl min-h-[360px] lg:h-[380px]">
+       <article className="relative overflow-hidden rounded-3xl min-h-[360px] lg:h-[380px]" aria-label="Nåværende vær">
       
       {/* Glass layer */}
       <div

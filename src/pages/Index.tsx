@@ -280,7 +280,7 @@ const Index = () => {
 
         {/* TIME-FOR-TIME */}
         {showHourly && (
-          <section style={{ minHeight: 380 }}>
+          <section style={{ minHeight: 220 }}>
             <HourlyForecast
               unit={unit}
               items={filteredHourly}

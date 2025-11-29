@@ -85,7 +85,7 @@ export const CurrentWeather = ({
       icon: <Wind className="h-5 w-5 shrink-0 block" />,
     },
     {
-      title: "Luftfuktighet",
+      title: "Fuktighet",
       value: humidity ? `${humidity}%` : "0%",
       icon: <Droplets className="h-5 w-5 shrink-0 block" />,
     },
@@ -106,9 +106,9 @@ export const CurrentWeather = ({
   const feelsRounded = roundTemp(feelsLike, "celsius")
   const tempTone = tempToneClass(tempRounded, darkMode)
 
-  // Final heights: tuned smaller to match hero layout
-  const SECTION_HEIGHT = "lg:h-[380px]"   // whole widget height
-  const GRID_HEIGHT = "lg:h-[300px]"      // grid height (both cards fit perfectly)
+  // Høyder tilpasset mindre layout
+  const SECTION_HEIGHT = "lg:h-[380px]"   // total kort-høyde
+  const GRID_HEIGHT = "lg:h-[300px]"      // høyde for grid
 
   // Skeleton with identical height → zero CLS
   if (loading) {
@@ -146,10 +146,10 @@ export const CurrentWeather = ({
 
       <div className="relative z-10 p-6 md:p-8 flex flex-col gap-6">
 
-        {/* GRID — fixed height on desktop */}
-        <div className={`grid gap-8 lg:grid-cols-[2fr_1fr] ${GRID_HEIGHT}`}>
+        {/* GRID — fast høyde på skrivebordet */}
+        <div className={`grid gap-6 lg:grid-cols-[2fr_1fr] ${GRID_HEIGHT}`}>
 
-          {/* LEFT CARD */}
+          {/* VENSTRE KORT */}
           <div
             className={`
               rounded-2xl bg-gradient-to-br p-6
@@ -160,7 +160,7 @@ export const CurrentWeather = ({
           >
             <div className="flex flex-col gap-4">
               
-              {/* Header */}
+              {/* Overskrift */}
               <div className="flex flex-col gap-1">
                 <p className={`text-xs uppercase tracking-wide ${darkMode ? "text-slate-400" : "text-slate-600"}`}>Nå</p>
                 <p className={`text-2xl font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{location}</p>
@@ -169,7 +169,7 @@ export const CurrentWeather = ({
                 </p>
               </div>
 
-              {/* Symbol text */}
+              {/* Symboltekst */}
               <p className={`text-sm capitalize ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
                 {symbol.replace(/[-_]/g, " ")}
               </p>
@@ -203,8 +203,8 @@ export const CurrentWeather = ({
             </div>
           </div>
 
-          {/* RIGHT CARD */}
-          <div className={`grid gap-3 sm:grid-cols-2 lg:h-full`}>
+          {/* HØYRE KORT */}
+          <div className="grid gap-3 sm:grid-cols-2 lg:h-full">
             {detailItems.map((item) => (
               <div
                 key={`${item.title}-${item.value}`}

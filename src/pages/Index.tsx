@@ -205,7 +205,11 @@ const Index = () => {
             onChange={(v) => { setQuery(v); setShowSuggestions(true) }}
             onSubmit={() => {
               const q = query.trim()
-              if (q) refresh(q)
+              if (!q) return
+              setShowSuggestions(false)
+              setSuggestions([])
+              setQuery('')
+              refresh(q)
             }}
             loading={loading}
             darkMode={darkMode}

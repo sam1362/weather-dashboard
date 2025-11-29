@@ -69,7 +69,7 @@ export const WeatherSearch = ({
           aria-label="Søk etter sted"
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Skriv et sted, f.eks. Oslo eller Bergen"
+          placeholder="Skriv et sted ..."
           autoComplete="off"
 
           className={cn(
@@ -98,7 +98,7 @@ export const WeatherSearch = ({
                 ? "border-white/10 bg-midnight-soft text-slate-100"
                 : "border-slate-200 bg-white text-slate-900"
             )}
-            style={{ minHeight: 44 }} // ZERO-CLS
+            style={{ minHeight: 44 }} 
           >
             {suggestions.map((item) => (
               <li key={`${item.label}-${item.subLabel ?? ''}`}>
@@ -157,7 +157,7 @@ export const WeatherSearch = ({
         type="submit"
         aria-busy={loading}
         className={cn(
-          "flex items-center justify-center gap-2 h-[44px] min-w-[120px] rounded-xl px-4 text-sm font-semibold transition",
+          "flex items-center justify-center gap-2 h-[44px] w-[80px] sm:w-auto sm:min-w-[96px] rounded-xl px-4 text-sm font-semibold transition",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-600 whitespace-nowrap",
           loading
             ? darkMode
@@ -170,7 +170,7 @@ export const WeatherSearch = ({
       >
         {/* block icon */}
         <Compass className="h-4 w-4 block text-white" aria-hidden />
-        {loading ? "Laster..." : "Søk nå"}
+        Søk
       </button>
 
     </form>

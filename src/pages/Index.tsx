@@ -27,7 +27,7 @@ const Index = () => {
   const [showMenu, setShowMenu] = useState(false)
   const [hourFilter, setHourFilter] = useState<HourFilter>('all')
 
-  const debouncedQuery = useDebounce(query, 0)
+  const debouncedQuery = useDebounce(query, 300)
   const firstRun = useRef(true)
   const isMobile = useMobile(768)
 

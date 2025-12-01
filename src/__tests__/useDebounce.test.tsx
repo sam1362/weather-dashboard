@@ -7,7 +7,7 @@ jest.useFakeTimers()
 
 describe('useDebounce', () => {
   // Verifiserer at verdien oppdateres etter 300 ms
-  it('debouncer oppdaterer etter 600ms', () => {
+  it('debouncer oppdaterer etter 300ms', () => {
     const { result, rerender } = renderHook(({ value }) => useDebounce(value, 300), {
       initialProps: { value: 'Oslo' },
     })
